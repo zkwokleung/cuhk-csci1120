@@ -26,9 +26,9 @@ int gridState(long long grid, int pos)
 
 void printGrid(long long grid)
 {
-    for (int i = 3; i >= 0; i--)
+    for (int i = 0; i < 4; i++)
     {
-        for (int j = 4; j > 0; j--)
+        for (int j = 1; j <= 4; j++)
         {
             switch (gridState(grid, 4 * i + j))
             {
@@ -96,23 +96,42 @@ bool isPlaceable(long long grid, int pos, int p)
 void putToGrid(long long &grid, int pos, int p)
 {
     // This function assume all input is valid
-    grid += p * pow(10, pos - 1);
+    grid += p * pow(10, 16 - pos);
 
     if (p == 1)
     {
         // put below
-        grid += p * pow(10, pos + 3);
+        grid += p * pow(10, 16 - pos - 4);
     }
     else
     {
         // put right
-        grid += p * pow(10, pos);
+        grid += p * pow(10, 16 - pos - 1);
     }
 }
 
 int main(int argc, char const *argv[])
 {
-    long long grid = 1000000000000000;
+    long long grid = 0;
+    putToGrid(grid, 1, 1);
+    putToGrid(grid, 2, 2);
     printGrid(grid);
+
+    cout << "gridState(grid, 1) " << gridState(grid, 1) << endl;
+    cout << "isPlaceable(grid, 1, 1) " << isPlaceable(grid, 1, 1) << endl;
+    cout << "isPlaceable(grid, 4, 1) " << isPlaceable(grid, 4, 1) << endl;
+    cout << "isPlaceable(grid, 4, 2) " << isPlaceable(grid, 4, 2) << endl;
+    cout << "isPlaceable(grid, 16, 1) " << isPlaceable(grid, 16, 1) << endl;
+    cout << "isPlaceable(grid, 16,2) " << isPlaceable(grid, 16, 2) << endl;
+
+    cout << "grid " << grid << endl;
+
+    cout << "gridState()";
+    for (int i = 1; i <= 16; i++)
+    {
+        cout << gridState(grid, i);
+    }
+    cout << endl;
+
     return 0;
 }

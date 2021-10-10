@@ -26,7 +26,7 @@ void putToGrid(long long &grid, int pos, int p);
 // Function implementation
 int gridState(long long grid, int pos)
 {
-    return grid / (long long)pow(10, pos - 1) % 10;
+    return grid / (long long)pow(10, 16 - pos) % 10;
 }
 
 void printGrid(long long grid)
@@ -101,17 +101,17 @@ bool isPlaceable(long long grid, int pos, int p)
 void putToGrid(long long &grid, int pos, int p)
 {
     // This function assume all input is valid
-    grid += p * pow(10, pos - 1);
+    grid += p * pow(10, 16 - pos);
 
     if (p == 1)
     {
         // put below
-        grid += p * pow(10, pos + 3);
+        grid += p * pow(10, 16 - pos - 4);
     }
     else
     {
         // put right
-        grid += p * pow(10, pos);
+        grid += p * pow(10, 16 - pos - 1);
     }
 }
 #pragma endregion
