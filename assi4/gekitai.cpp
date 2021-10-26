@@ -17,14 +17,38 @@ void print(char board[][N]);
 #pragma endregion
 
 #pragma region My functions implementation
+// Read input from user and store them inside x, y
+void get_input(char board[][N], char player, int *y, int *x)
+{
+    char ipt_x;
+    int ipt_y;
+    cout << "Player " << player << "'s turn: ";
+    cin >> ipt_x >> ipt_y;
+    *x = (ipt_x >= 'a') ? ipt_x - 'a' : ipt_x - 'A';
+    *y = ipt_y - 1;
+
+    // cout << "DEBUG: tmp_x= " << tmp_x << ", tmp_y = " << tmp_y << endl;
+    // cout << "DEBUG: x= " << *x << ", y = " << *y << endl;
+
+    // Check input validity
+    if (!is_valid_move(board, player, *y, *x))
+    {
+        cout << "Invalid move!" << endl;
+        // Recursively call until the input is valid
+        get_input(board, player, y, x);
+    }
+}
+
 // Knock back the piecce in direction of (dir_x, dir_y)
 void knock_back(char board[][N], int tar_y, int tar_x, int dir_y, int dir_x)
 {
     int to_x = tar_x + dir_x, to_y = tar_y + dir_y;
+    // cout << "DEBUG: tar: (" << tar_x << ", " << tar_y << "); dir: (" << dir_x << ", " << dir_y << "); to: (" << to_x << ", " << to_y << ")" << endl;
     if (to_x < 0 || to_x >= N || to_y < 0 || to_y >= N)
     {
         // Return the piece
-        board[tar_y][tar_x] = '.';
+        if (tar_y >= 0 && tar_x >= 0 && tar_y < N && tar_x < N && board[tar_y][tar_x] != '.')
+            board[tar_y][tar_x] = '.';
     }
     else
     {
@@ -41,12 +65,30 @@ void knock_back(char board[][N], int tar_y, int tar_x, int dir_y, int dir_x)
         }
     }
 }
+
+// Return the winner. Will return 0 if no winner, and return D if draw
+char get_winner(char board[][N])
+{
+    bool X = pieces_on_board(board, 'X') == P || pieces_in_line(board, 'X');
+    bool O = pieces_on_board(board, 'O') == P || pieces_in_line(board, 'O');
+
+    if (X && O)
+        return 'D';
+
+    if (X)
+        return 'X';
+
+    if (O)
+        return 'O';
+
+    return 0;
+}
 #pragma endregion
 
 #pragma region Required functions implementations
 bool is_valid_move(char board[][N], char player, int y, int x)
 {
-    return board[y][x] == '.';
+    return y >= 0 && x >= 0 && y < N && x < N && board[y][x] == '.';
 }
 
 int pieces_on_board(char board[][N], char player)
@@ -62,62 +104,28 @@ int pieces_on_board(char board[][N], char player)
 
 bool pieces_in_line(char board[][N], char player)
 {
-    int count_H = 0, count_V = 0, count_DU = 0, count_DD = 0;
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
             // Horizontal
-            if (board[i][j] == player)
-            {
-                count_H++;
-                if (count_H >= L)
-                    return true;
-            }
-            else
-            {
-                count_H = 0;
-            }
+            if (j + 2 < N && board[i][j] == player && board[i][j + 1] == player && board[i][j + 2] == player)
+                return true;
 
             // Vertical
-            if (board[j][i] == player)
+            if (i + 2 < N && board[i][j] == player && board[i + 1][j] == player && board[i + 2][j] == player)
+                return true;
+
+            if (i - 1 > 0 && j - 1 > 0 && i + 1 < N && j + 1 < N)
             {
-                count_V++;
-                if (count_V >= L)
+                // Diagonal right
+                if (board[i - 1][j - 1] == player && board[i][j] == player && board[i + 1][j + 1] == player)
+                    return true;
+
+                // Diagonal left
+                if (board[i - 1][j + 1] == player && board[i][j] == player && board[i + 1][j - 1] == player)
                     return true;
             }
-            else
-            {
-                count_H = 0;
-            }
-        }
-    }
-
-    // Diagonal right
-    for (int k = 0; k < N; k++)
-    {
-        // Break the checking if there is no more than L block to check
-        if (N - k < L)
-            break;
-        for (int i = k, j = 0; i < N && j < N; i++, j++)
-        {
-            // Upper half of the board
-            if (board[j][i] == player)
-                count_DU++;
-            else
-                count_DU = 0;
-
-            if (count_DU >= L)
-                return true;
-
-            // Lower half of the board
-            if (board[i][j] == player)
-                count_DD++;
-            else
-                count_DD = 0;
-
-            if (count_DD >= L)
-                return true;
         }
     }
 
@@ -137,7 +145,7 @@ void move(char board[][N], char player, int y, int x)
     {
         for (int dir_x = -1; dir_x <= 1; dir_x++)
         {
-            if (dir_y == 0 && x == 0)
+            if (dir_y == 0 && dir_x == 0)
                 continue;
 
             knock_back(board, y + dir_y, x + dir_x, dir_y, dir_x);
@@ -168,83 +176,111 @@ void print(char board[][N])
 
 int main(void)
 {
-    char board[N][N];
+    char board[N][N], currentPlayer = 'X', winner = 0;
+    int round = 0, ipt_x, ipt_y;
+
     // Board initialize
     for (int row = 0; row < N; row++)
-    {
         for (int col = 0; col < N; col++)
-        {
             board[row][col] = '.';
-        }
+
+    // Game Loop
+    while (!winner)
+    {
+        cout << "Round " << ++round << ":" << endl;
+        print(board);
+        get_input(board, currentPlayer, &ipt_y, &ipt_x);
+        move(board, currentPlayer, ipt_y, ipt_x);
+        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+
+        winner = get_winner(board);
     }
 
+    // End game message
+    cout << "Game over:" << endl;
+    print(board);
+    if (winner == 'D')
+        cout << "Draw game!";
+    else
+        cout << "Player " << winner << " wins!";
+
 #pragma region Test
-    // for (int k = 0; k < N; k++)
-    // {
-    //     // Break the checking if there is no more than L block to check
-    //     if (N - k < L)
-    //         break;
-    //     for (int i = k, j = 0; i < N && j < N; i++, j++)
-    //     {
-    //         if (N - k < L)
-    //             break;
-    //         board[j][i] = char(k + '0');
-    //         print(board);
-    //     }
-    //     cout << endl;
-    // }
-    // cout << "=============" << endl;
-    // for (int k = 0; k < N; k++)
-    // {
-    //     // Break the checking if there is no more than L block to check
-    //     if (N - k < L)
-    //         break;
-    //     for (int i = k, j = 0; i < N && j < N; i++, j++)
-    //     {
-    //         board[i][j] = char(k + '0');
-    //         print(board);
-    //     }
-    //     cout << endl;
-    // }
+        // for (int k = 0; k < N; k++)
+        // {
+        //     // Break the checking if there is no more than L block to check
+        //     if (N - k < L)
+        //         break;
+        //     for (int i = k, j = 0; i < N && j < N; i++, j++)
+        //     {
+        //         if (N - k < L)
+        //             break;
+        //         board[j][i] = char(k + '0');
+        //         print(board);
+        //     }
+        //     cout << endl;
+        // }
+        // cout << "=============" << endl;
+        // for (int k = 0; k < N; k++)
+        // {
+        //     // Break the checking if there is no more than L block to check
+        //     if (N - k < L)
+        //         break;
+        //     for (int i = k, j = 0; i < N && j < N; i++, j++)
+        //     {
+        //         board[i][j] = char(k + '0');
+        //         print(board);
+        //     }
+        //     cout << endl;
+        // }
 
-    // Diagonal right
-    // for (int k = 0; k < N; k++)
-    // {
-    //     // Break the checking if there is no more than L block to check
-    //     if (N - k < L)
-    //         break;
-    //     for (int i = k, j = 0; i < N && j < N; i++, j++)
-    //     {
-    //         board[i][j] = k + '0';
-    //     }
-    // }
-    // print(board);
+        // Diagonal right
+        // for (int k = 0; k < N; k++)
+        // {
+        //     // Break the checking if there is no more than L block to check
+        //     if (N - k < L)
+        //         break;
+        //     for (int i = k, j = 0; i < N && j < N; i++, j++)
+        //     {
+        //         board[i][j] = k + '0';
+        //     }
+        // }
+        // print(board);
 
-    // Diagonal left
-    // for (int k = N - 1; k >= 0; k--)
-    // {
-    //     // Break the checking if there is no more than L block to check
-    //     if (k + 1 < L)
-    //         break;
-    //     for (int i = k, j = 0; i >= 0 && j < N; i--, j++)
-    //     {
-    //         board[i][j] = k + '0';
-    //     }
-    // }
-    // print(board);
+        // Diagonal left
+        // for (int k = N - 1; k >= 0; k--)
+        // {
+        //     // Break the checking if there is no more than L block to check
+        //     if (k + 1 < L)
+        //         break;
+        //     for (int i = k, j = 0; i >= 0 && j < N; i--, j++)
+        //     {
+        //         board[i][j] = k + '0';
+        //     }
+        // }
+        // print(board);
 
-    // move(board, 'O', 0, 0);
-    // print(board);
-    // move(board, 'O', 2, 2);
-    // print(board);
-    // move(board, 'X', 1, 1);
-    // print(board);
-    // move(board, 'X', 1, 3);
-    // print(board);
-    // move(board, 'X', 4, 4);
-    // print(board);
-    // move(board, 'X', 3, 1);
-    // print(board);
+        // move(board, 'O', 0, 0);
+        // print(board);
+        // move(board, 'O', 2, 2);
+        // print(board);
+        // move(board, 'X', 1, 1);
+        // print(board);
+        // move(board, 'X', 1, 3);
+        // print(board);
+        // move(board, 'X', 4, 4);
+        // print(board);
+        // move(board, 'X', 3, 1);
+        // print(board);
+
+        // board[3 - 1][3 + 1] = 'X';
+        // board[3][3] = 'X';
+        // board[3 + 1][3 - 1] = 'X';
+
+        // board[5][5] = 'X';
+        // board[4][4] = 'X';
+        // board[3][3] = 'X';
+        // print(board);
+        // cout << pieces_in_line(board, 'X') << endl;
 #pragma endregion
 
     return 0;
