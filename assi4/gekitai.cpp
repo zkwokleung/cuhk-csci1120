@@ -1,3 +1,7 @@
+// name: SZE-TO Kwok Leung
+// sid: 1155149068
+// email: 1155149068@link.cuhk.edu.hk
+
 #include <iostream>
 
 using namespace std;
@@ -116,7 +120,7 @@ bool pieces_in_line(char board[][N], char player)
             if (i + 2 < N && board[i][j] == player && board[i + 1][j] == player && board[i + 2][j] == player)
                 return true;
 
-            if (i - 1 > 0 && j - 1 > 0 && i + 1 < N && j + 1 < N)
+            if (i - 1 >= 0 && j - 1 >= 0 && i + 1 < N && j + 1 < N)
             {
                 // Diagonal right
                 if (board[i - 1][j - 1] == player && board[i][j] == player && board[i + 1][j + 1] == player)
@@ -200,9 +204,9 @@ int main(void)
     cout << "Game over:" << endl;
     print(board);
     if (winner == 'D')
-        cout << "Draw game!";
+        cout << "Draw game!" << endl;
     else
-        cout << "Player " << winner << " wins!";
+        cout << "Player " << winner << " wins!" << endl;
 
 #pragma region Test
         // for (int k = 0; k < N; k++)
