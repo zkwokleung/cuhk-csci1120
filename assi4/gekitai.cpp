@@ -160,14 +160,22 @@ void move(char board[][N], char player, int y, int x)
 void print(char board[][N])
 {
     // Margin
-    cout << "  ";
+    cout << "   ";
     // Header
     for (int i = 0; i < N; i++)
-        cout << char(i + 'A') << " ";
+    {
+        cout << char(i + 'A');
+        if (i < N - 1)
+            cout << ' ';
+    }
     cout << endl;
 
     for (int row = 0; row < N; row++)
     {
+        // Margin for 2 digit rows
+        if (row + 1 < 10)
+            cout << ' ';
+
         cout << row + 1 << ' ';
         for (int col = 0; col < N; col++)
         {
