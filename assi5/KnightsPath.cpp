@@ -1,3 +1,7 @@
+// name: SZE-TO Kwok Leung
+// sID: 1155149068
+// email: 1155149068@link.cuhk.edu.hk
+
 #include <iostream>
 #include <cmath>
 #include "KnightsPath.h"
