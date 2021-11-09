@@ -6,35 +6,11 @@
 #include "KnightsPath.h"
 
 using namespace std;
-
-void get_statring_input(int *col, int *row)
-{
-    char tmp_col;
-    int tmp_row;
-    cout << "Enter starting position (col row): ";
-    cin >> tmp_col >> tmp_row;
-
-    // Check if the input is within range and if it is a valid move
-    if (tmp_col - 'A' < 0 || tmp_col - 'A' >= KnightsPath::N ||
-        tmp_row < 0 || tmp_row >= KnightsPath::N)
-    {
-        // Recursively call until received a valid input
-        cout << "Invalid. Try again!" << endl;
-        get_statring_input(col, row);
-    }
-    else
-    {
-        *col = tmp_col - 'A';
-        *row = tmp_row;
-    }
-}
-
 // Get input without any checking
-void get_move_input(int *row, int *col)
+void get_input(int *row, int *col)
 {
     char tmp_col;
     int tmp_row;
-    cout << "Move the knight (col row): ";
     cin >> tmp_col >> tmp_row;
     *col = tmp_col - 'A';
     *row = tmp_row;
@@ -46,7 +22,20 @@ int main(void)
     bool flag = false; // A continue flag for input reading part.
 
     // Starting position
-    get_statring_input(&c, &r);
+    do
+    {
+        flag = false;
+        cout << "Enter starting position (col row): ";
+        get_input(&c, &r);
+
+        // Check if the inputs are in range
+        if (c < 0 || c >= KnightsPath::N ||
+            r < 0 || r >= KnightsPath::N)
+        {
+            cout << "Invalid. Try again!" << endl;
+            flag = true;
+        }
+    } while (flag);
     // Initialize
     KnightsPath kp = KnightsPath(r, c);
 
@@ -57,7 +46,8 @@ int main(void)
         do
         {
             flag = false;
-            get_move_input(&r, &c);
+            cout << "Move the knight (col row): ";
+            get_input(&r, &c);
             if (!kp.move(r, c))
             {
                 cout << "Invalid move. Try again!" << endl;
