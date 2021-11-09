@@ -81,12 +81,12 @@ bool KnightsPath::isValid(int r, int c) const
 {
     // Check if it is within range
     // cout << "DEBUG: " << (c >= 0 && c < KnightsPath::N) << " " << (r >= 0 && r < KnightsPath::N) << " " << (board[r][c] == -1) << endl;
+    // cout << "DEBUG: board[r][c] = " << board[r][c] << endl;
     if ((c >= 0 && c < KnightsPath::N) &&
         (r >= 0 && r < KnightsPath::N) &&
         (board[r][c] == -1))
     {
         // Check if it is a valid move for a knight
-        // cout << "DEBUG: " << (-2 < 2) << endl;
         for (int i = -2; i <= 2; i += 4)
         {
             for (int j = -1; j <= 1; j += 2)
@@ -97,7 +97,10 @@ bool KnightsPath::isValid(int r, int c) const
                 {
                     // Check if it is going backward by its distance
                     if (steps > 0)
+                    {
+                        // cout << "DEBUG: pow(r - previousR, 2) + pow(c - previousC, 2) > 4 => " << (pow(r - previousR, 2) + pow(c - previousC, 2) > 4) << endl;
                         return pow(r - previousR, 2) + pow(c - previousC, 2) > 4;
+                    }
                     else
                         return true;
                 }
@@ -143,6 +146,7 @@ bool KnightsPath::move(int r, int c)
     else
     {
         // Update nothing
+        // cout << "ERROR: Something went wrong while moving the knight!" << endl;
         return false;
     }
 }
