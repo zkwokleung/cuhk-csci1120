@@ -15,8 +15,8 @@ void get_statring_input(int *col, int *row)
     cin >> tmp_col >> tmp_row;
 
     // Check if the input is within range and if it is a valid move
-    if (tmp_col - 'A' < 0 || tmp_col - 'A' > KnightsPath::N ||
-        tmp_row < 0 || tmp_row > KnightsPath::N)
+    if (tmp_col - 'A' < 0 || tmp_col - 'A' >= KnightsPath::N ||
+        tmp_row < 0 || tmp_row >= KnightsPath::N)
     {
         // Recursively call until received a valid input
         cout << "Invalid. Try again!" << endl;
@@ -45,8 +45,8 @@ void get_move_input(KnightsPath kp, int *row, int *col)
     else
     {
         // Recursively call until received a valid input
-        cout << "Invalid. Try again!" << endl;
-        get_statring_input(col, row);
+        cout << "Invalid move. Try again!" << endl;
+        get_move_input(kp, col, row);
     }
 }
 
@@ -68,6 +68,7 @@ int main(void)
     } while (kp.hasMoreMoves());
 
     // End game message
+    kp.print();
     cout << "Finished! No more moves!" << endl;
     if (kp.getSteps() > (KnightsPath::N * KnightsPath::N / 2))
         cout << "Well done!";
