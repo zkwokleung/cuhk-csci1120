@@ -6,6 +6,7 @@
 #include "KnightsPath.h"
 
 using namespace std;
+
 // Get input without any checking
 void get_input(int *row, int *col)
 {
@@ -25,10 +26,9 @@ int main(void)
     do
     {
         flag = false;
-        cout << "Enter starting position (col row): ";
-        get_input(&c, &r);
 
-        // Check if the inputs are in range
+        cout << "Enter starting position (col row): ";
+        get_input(&r, &c);
         if (c < 0 || c >= KnightsPath::N ||
             r < 0 || r >= KnightsPath::N)
         {
@@ -36,6 +36,7 @@ int main(void)
             flag = true;
         }
     } while (flag);
+
     // Initialize
     KnightsPath kp = KnightsPath(r, c);
 
