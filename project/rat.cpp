@@ -21,14 +21,31 @@ bool Rat::isMoveValid(Board *board, int y, int x)
 
     // allow a Rat to enter a water square
     // Just don't return false when it is a river
+
     return true;
 }
 
 bool Rat::canCapture(Piece *p)
 {
     // A Rat can capture an Elephant
-    if (p->getRank() == ELEPHANT)
+    if (p->getRank() == ELEPHANT && !isOnRiver())
         return true;
 
-    return Piece::canCapture(p);
+    // A Rat can capture a Rat that is also on River
+    if (isOnRiver() && p->getRank() == RAT && ((Rat *)p)->isOnRiver())
+        return true;
+
+    return !isOnRiver() && Piece::canCapture(p);
+}
+
+void Rat::move(Board *board, int y, int x)
+{
+    m_isOnRiver = board->isRiver(y, x);
+
+    Piece::move(board, y, x);
+}
+
+bool Rat::isOnRiver()
+{
+    return m_isOnRiver;
 }
