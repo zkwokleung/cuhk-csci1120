@@ -209,25 +209,24 @@ void Board::print()
 // Check if the move from (y1, x1) to (y2, x2) is valid
 bool Board::isMoveValid(int y1, int x1, int y2, int x2)
 {
-    // check against invalid cases, for example,
     // - the source is an empty cell
-    if (get(y1, x1) == nullptr || get(y1, x1) == OUT_BOUND)
+    if (get(y1, x1) == EMPTY || get(y1, x1) == OUT_BOUND)
         return false;
+
     // - the source and destination are the same position
     if (y1 == y2 && x1 == x2)
         return false;
+
     // - the destination is out of bound of the board (hint: use OUT_BOUND)
     if (get(y2, x2) == OUT_BOUND)
         return false;
+
     // - the source piece is not of same color of current turn of the game
     if (getGame()->getTurn() != get(y1, x1)->getColor())
         return false;
 
     // Piece-specific validation
-    if (!get(y1, x1)->isMoveValid(this, y2, x2))
-        return false;
-
-    return true;
+    return get(y1, x1)->isMoveValid(this, y2, x2);
 }
 
 // Carry out the move from (y1, x1) to (y2, x2)

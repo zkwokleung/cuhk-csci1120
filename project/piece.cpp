@@ -83,13 +83,15 @@ bool Piece::isOpponent(Piece *p)
 bool Piece::canCapture(Piece *p)
 {
     // Check if this piece's rank is >= p's rank
-    // OR if the piece is trapped
-    return p && !this->isTrapped() && (p->isTrapped() || this->getRank() >= p->getRank()) && isOpponent(p);
+    return p && !this->isTrapped() && isOpponent(p) && this->getRank() >= p->getRank();
 }
 
 // Carry out the capture of piece p
 void Piece::capture(Board *board, Piece *p)
 {
+    if (p == EMPTY)
+        return;
+
     // Remove the piece from board and opponent player's list of pieces
     board->put(p->getY(), p->getX(), EMPTY);
     board->getGame()->getPlayer(p->getColor())->delPiece(p);
@@ -100,20 +102,19 @@ void Piece::capture(Board *board, Piece *p)
 // Carry out the move of this piece to (y, x)
 void Piece::move(Board *board, int y, int x)
 {
-    if (!isMoveValid(board, y, x))
-        return;
-
     // capture opponent piece
     if (board->get(y, x) != EMPTY)
         capture(board, board->get(y, x));
 
+    Color opColor = (getColor() == BLUE) ? RED : BLUE;
+
     // handle rank changes when entering and leaving traps
-    if (board->isTrap(y, x, (getColor() == BLUE) ? RED : BLUE))
+    if (board->isTrap(y, x, opColor))
     {
         setTrapped(true);
         setRank(0);
     }
-    else
+    else if (this->isTrapped() && !board->isTrap(y, x, opColor))
     {
         setTrapped(false);
         for (int i = 0; i < 8; i++)
@@ -128,15 +129,13 @@ void Piece::move(Board *board, int y, int x)
 
     // check winning conditions
     // (moved into opponent's den or captured all opponent pieces)
-    if (board->isDen(y, x, (getColor() == BLUE) ? RED : BLUE) ||
-        board->getGame()->getPlayer((getColor() == BLUE) ? RED : BLUE)->getPieceCount() == 0)
+    if (board->isDen(y, x, opColor) ||
+        board->getGame()->getPlayer(opColor)->getPieceCount() == 0)
         board->getGame()->setState(GAME_OVER);
 
     // carry out the move
-    board->put(y, x, this);
     board->put(this->getY(), this->getX(), EMPTY);
-    this->setY(y);
-    this->setX(x);
+    board->put(y, x, this);
 }
 
 // Check if moving this piece to (y, x) is valid
@@ -144,9 +143,10 @@ void Piece::move(Board *board, int y, int x)
 // [Note: you can modify this function if it doesn't fit your design]
 bool Piece::isMoveValid(Board *board, int y, int x)
 {
-    Piece *q = board->get(y, x); // target cell
-    if (board->isRiver(y, x))    // target is a river cell
+    if (board->isRiver(y, x)) // target is a river cell
         return false;
+
+    Piece *q = board->get(y, x);      // target cell
     if (q != EMPTY && !canCapture(q)) // cell occuppied by higher-rank opponent
         return false;
     return true;
