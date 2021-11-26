@@ -15,3 +15,8 @@ bool Leopard::isMoveValid(Board *board, int y, int x)
         return false;
     return Piece::isMoveValid(board, y, x);
 }
+
+char Leopard::getLabel() const
+{
+    return getColor() == BLUE ? 'p' : 'P';
+}
