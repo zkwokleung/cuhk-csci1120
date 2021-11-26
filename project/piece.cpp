@@ -146,6 +146,10 @@ bool Piece::isMoveValid(Board *board, int y, int x)
     if (board->isRiver(y, x)) // target is a river cell
         return false;
 
+    // Target is own den
+    if (board->isDen(y, x, getColor()))
+        return false;
+
     Piece *q = board->get(y, x);      // target cell
     if (q != EMPTY && !canCapture(q)) // cell occuppied by higher-rank opponent
         return false;
