@@ -96,7 +96,7 @@ void Piece::capture(Board *board, Piece *p)
     board->put(p->getY(), p->getX(), EMPTY);
     board->getGame()->getPlayer(p->getColor())->delPiece(p);
 
-    cout << p->getName() << " of " << p->getName() << " captured!" << endl;
+    cout << p->getName() << " of " << board->getGame()->getPlayer(p->getColor())->getName() << " captured!" << endl;
 }
 
 // Carry out the move of this piece to (y, x)
