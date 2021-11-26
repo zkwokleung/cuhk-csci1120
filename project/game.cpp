@@ -54,6 +54,7 @@ void Game::run() {
     cout << "Game over:" << endl;
     board->print();
     
-    // TODO: print who wins
+    // print who wins
     // (assumed the winner is the player who made the last turn)
+    cout << "Player " << (getPlayer(turn))->getName() << " wins!";
 }

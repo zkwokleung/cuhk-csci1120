@@ -7,8 +7,7 @@ class Machine : public Player
 {
 public:
     Machine(string name, Color color);
-    virtual void makeMove(Board* board);
-    // ... more functions or data members if needed
+    virtual void makeMove(Board *board);
 };
 
 #endif /* MACHINE_H */

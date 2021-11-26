@@ -3,19 +3,32 @@
 
 using namespace std;
 
-Rat::Rat(Color color, int y, int x) : Piece(color, y, x) {
-    setName(PIECE_NAME[RAT-1]);
+Rat::Rat(Color color, int y, int x) : Piece(color, y, x)
+{
+    setName(PIECE_NAME[RAT - 1]);
     setRank(RAT);
 }
 
-bool Rat::isMoveValid(Board* board, int y, int x) {
-    // TODO: Override the superclass version of valid move checks
-    // e.g., to allow a Rat to move into a square occuppied by an Elephant 
-    //       to allow a Rat to enter a water square
-    
+bool Rat::isMoveValid(Board *board, int y, int x)
+{
+    if (abs(getY() - y) + abs(getX() - x) != 1) // move other than 1 square
+        return false;
+
+    Piece *q = board->get(y, x);
+    // allow a Rat to move into a square occuppied by an Elephant
+    if (q != EMPTY)
+        return canCapture(q);
+
+    // allow a Rat to enter a water square
+    // Just don't return false when it is a river
+    return true;
 }
 
-bool Rat::canCapture(Piece* p) {
-    // TODO: Override the superclass version of capture checks
+bool Rat::canCapture(Piece *p)
+{
     // A Rat can capture an Elephant
+    if (p->getRank() == ELEPHANT)
+        return true;
+
+    return Piece::canCapture(p);
 }

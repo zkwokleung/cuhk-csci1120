@@ -1,16 +1,19 @@
-#include "tiger.h"
+#include "lion.h"
 #include <iostream>
 
 using namespace std;
 
-Tiger::Tiger(Color color, int y, int x) : Piece(color, y, x)
+Lion::Lion(Color color, int y, int x) : Piece(color, y, x)
 {
-    setName(PIECE_NAME[TIGER - 1]);
-    setRank(TIGER);
+    setName(PIECE_NAME[LION - 1]);
+    setRank(LION);
 }
 
-bool Tiger::isMoveValid(Board *board, int y, int x)
+bool Lion::isMoveValid(Board *board, int y, int x)
 {
+    /* make use of the isJumpable() function inherited from Jumper
+             to check if horizontal and vertical jump can be done */
+
     if (abs(getY() - y) + abs(getX() - x) != 1) // move other than 1 square
     {
         // Check if is jumpable
