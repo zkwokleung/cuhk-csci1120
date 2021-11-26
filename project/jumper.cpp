@@ -19,14 +19,23 @@ bool Jumper::isJumpable(Board *board, Piece *p, int y, int x, int steps)
   if (steps != 2 && steps != 3)
     return false;
 
-  int dir = (steps == 2) ? ((p->getX() < x) ? 1 : -1) : ((p->getY() < y) ? 1 : -1);
-  for (int i = 0; i < steps; i++)
+  if (y == p->getY() && x == p->getX())
+    return false;
+
+  // Determine the jump direction by the steps and
+  int dirX = (steps == 2) ? (x < p->getX() ? -1 : 1) : 0;
+  int dirY = (steps == 3) ? (y < p->getY() ? -1 : 1) : 0;
+  for (int i = 1; i <= steps; i++)
   {
-    // Determine the direction
-    int tarY = p->getY() + i * dir;
-    int tarX = p->getX() + i * dir;
+    // Determine the destination
+    int tarY = p->getY() + i * dirY;
+    int tarX = p->getX() + i * dirX;
+
+    // return false if it is not a river or the river is not empty
     if (!board->isRiver(tarY, tarX) || !board->isEmpty(tarY, tarX))
+    {
       return false;
+    }
   }
 
   Piece *q = board->get(y, x);

@@ -18,13 +18,13 @@ bool Tiger::isMoveValid(Board *board, int y, int x)
         // Horizontal Jump
         if (y == this->getY() && x != this->getX())
         {
-            return isJumpable(board, this, y, x, abs(x - this->getX()));
+            return isJumpable(board, this, y, x, abs(x - this->getX()) - 1);
         }
 
         // Vertical Jump
         if (x == this->getX() && y != this->getY())
         {
-            return isJumpable(board, this, y, x, abs(y - this->getY()));
+            return isJumpable(board, this, y, x, abs(y - this->getY()) - 1);
         }
 
         return false;
