@@ -14,10 +14,14 @@ bool Rat::isMoveValid(Board *board, int y, int x)
     if (abs(getY() - y) + abs(getX() - x) != 1) // move other than 1 square
         return false;
 
+    // Not his own den
+    if (board->isDen(y, x, getColor()))
+        return false;
+
     Piece *q = board->get(y, x);
     // allow a Rat to move into a square occuppied by an Elephant
-    if (q != EMPTY)
-        return canCapture(q);
+    if (q != EMPTY && !Rat::canCapture(q))
+        return false;
 
     // allow a Rat to enter a water square
     // Just don't return false when it is a river
