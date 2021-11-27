@@ -27,7 +27,7 @@ void Machine::makeMove(Board *board)
         Piece *p = getPiece(i);
 
         // Check for the surrounding 4 cells
-        for (int dir = -1; dir != 1; dir += 2)
+        for (int dir = -1; dir <= 1; dir += 2)
         {
             // if it is a valid move for p, add to the list
             if (p->isMoveValid(board, p->getY() + dir, p->getX()))
