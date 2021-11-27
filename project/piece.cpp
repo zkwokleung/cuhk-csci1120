@@ -73,7 +73,7 @@ void Piece::setTrapped(bool trapped)
 // Return true if p is an opponent piece of this piece, and false otherwise
 bool Piece::isOpponent(Piece *p)
 {
-    if (p != EMPTY && p->getColor() != getColor())
+    if (p != EMPTY && p != OUT_BOUND && p->getColor() != getColor())
         return true;
     return false;
 }
@@ -83,13 +83,13 @@ bool Piece::isOpponent(Piece *p)
 bool Piece::canCapture(Piece *p)
 {
     // Check if this piece's rank is >= p's rank
-    return p != EMPTY && !this->isTrapped() && isOpponent(p) && this->getRank() >= p->getRank();
+    return p != EMPTY && p != OUT_BOUND && !this->isTrapped() && isOpponent(p) && this->getRank() >= p->getRank();
 }
 
 // Carry out the capture of piece p
 void Piece::capture(Board *board, Piece *p)
 {
-    if (p == EMPTY)
+    if (p == EMPTY || p == OUT_BOUND)
         return;
 
     // Remove the piece from board and opponent player's list of pieces
@@ -103,7 +103,7 @@ void Piece::capture(Board *board, Piece *p)
 void Piece::move(Board *board, int y, int x)
 {
     // capture opponent piece
-    if (board->get(y, x) != EMPTY)
+    if (board->get(y, x) != EMPTY || board->get(y, x) != OUT_BOUND)
         capture(board, board->get(y, x));
 
     Color opColor = (getColor() == BLUE) ? RED : BLUE;
@@ -150,8 +150,8 @@ bool Piece::isMoveValid(Board *board, int y, int x)
     if (board->isDen(y, x, getColor()))
         return false;
 
-    Piece *q = board->get(y, x);      // target cell
-    if (q != EMPTY && !canCapture(q)) // cell occuppied by higher-rank opponent
+    Piece *q = board->get(y, x);                        // target cell
+    if (q != EMPTY && q != OUT_BOUND && !canCapture(q)) // cell occuppied by higher-rank opponent
         return false;
     return true;
 }
