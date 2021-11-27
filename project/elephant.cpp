@@ -15,3 +15,11 @@ bool Elephant::isMoveValid(Board *board, int y, int x)
         return false;
     return Piece::isMoveValid(board, y, x);
 }
+
+bool Elephant::canCapture(Piece *p)
+{
+    if (p->getRank() == RAT)
+        return false;
+
+    return Piece::canCapture(p);
+}
