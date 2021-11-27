@@ -1,5 +1,8 @@
 #include <iostream>
 #include <time.h>
+#include <algorithm>
+#include <array>
+#include <vector>
 #include "machine.h"
 #include "game.h"
 #include "board.h"
@@ -15,18 +18,66 @@ Machine::Machine(string name, Color color) : Player(name, color)
 // a sample machine that makes random valid moves
 void Machine::makeMove(Board *board)
 {
-    // make a random but valid move of a randomly picked piece on a board
-    // - generate a random integer for picking a piece r from the player's pieces vector
-    Piece *p = getPiece(rand() % getPieceCount());
-    // - set y1, x1 to r->getY(), r->getX()
-    // - generate random integers y2 and x2 in range of [0, H) and [0, W) respectively
-    //   [or better in the y, x range of the 4 neighboring cells around (y1, x1), note to
-    //    handle jumpable cells, 2 or 3 cells away, as well for Tiger and Lion]
-    // - call board's move(y1, x1, y2, x2)
-    // - once a valid move is returned, print the from and to cell addresses
-    //   and exit this function
-    // Note: it can happen that no valid move can be found despite repeated picks.
-    //       For example, only a Rat remains alive at a corner of the board while
-    //       the two cells it may go have been occupied by a Cat and a Dog.
-    //       In this case, the player must surrender (set the opponent as winner).
+    // {pieceIdx, Y, X}
+    vector<array<int, 3>> moves;
+
+    // Generate a list of all valid moves
+    for (int i = 0; i < getPieceCount(); i++)
+    {
+        Piece *p = getPiece(i);
+
+        // Check for the surrounding 4 cells
+        for (int dir = -1; dir != 1; dir += 2)
+        {
+            // if it is a valid move for p, add to the list
+            if (p->isMoveValid(board, p->getY() + dir, p->getX()))
+                moves.push_back({i, p->getY() + dir, p->getX()});
+
+            if (p->isMoveValid(board, p->getY(), p->getX()))
+                moves.push_back({i, p->getY(), p->getX() + dir});
+
+            // Special case for jumpable pieces
+            if (p->getRank() == LION || p->getRank() == TIGER)
+            {
+                int tarY = -1, tarX = -1;
+                // Check for jumps
+                if (board->isRiver(p->getY() + dir, p->getX()))
+                {
+                    // 3 steps jump
+                    tarY = p->getY() + i * 4;
+                    tarX = p->getX();
+                }
+                else if (board->isRiver(p->getY(), p->getX()))
+                {
+                    // 2 steps jump
+                    tarY = p->getY();
+                    tarX = p->getX() + i * 3;
+                }
+
+                if (tarY != -1 && tarX != -1)
+                {
+                    if (p->isMoveValid(board, tarY, tarX))
+                        moves.push_back({i, tarY, tarX});
+                }
+            }
+        }
+    }
+
+    // Check for surrender
+    if (!moves.size())
+    {
+        board->getGame()->setState(GAME_OVER);
+        // set opponent as winner,
+        // by flipping the turn
+        board->getGame()->setTurn((getColor() == BLUE) ? RED : BLUE);
+        return;
+    }
+
+    // Pick a random move
+    int ran = rand() % moves.size(); // Index of list of moves
+
+    // Perform the move
+    int y1 = getPiece(moves[ran][0])->getY();
+    int x1 = getPiece(moves[ran][0])->getX();
+    board->move(y1, x1, moves[ran][1], moves[ran][2]);
 }

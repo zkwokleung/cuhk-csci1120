@@ -83,7 +83,7 @@ bool Piece::isOpponent(Piece *p)
 bool Piece::canCapture(Piece *p)
 {
     // Check if this piece's rank is >= p's rank
-    return p && !this->isTrapped() && isOpponent(p) && this->getRank() >= p->getRank();
+    return p != EMPTY && !this->isTrapped() && isOpponent(p) && this->getRank() >= p->getRank();
 }
 
 // Carry out the capture of piece p
