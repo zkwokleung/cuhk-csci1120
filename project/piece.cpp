@@ -143,6 +143,12 @@ void Piece::move(Board *board, int y, int x)
 // [Note: you can modify this function if it doesn't fit your design]
 bool Piece::isMoveValid(Board *board, int y, int x)
 {
+    Piece *q = board->get(y, x); // target cell
+
+    // Target is outbound
+    if (q == OUT_BOUND)
+        return false;
+
     if (board->isRiver(y, x)) // target is a river cell
         return false;
 
@@ -150,7 +156,6 @@ bool Piece::isMoveValid(Board *board, int y, int x)
     if (board->isDen(y, x, getColor()))
         return false;
 
-    Piece *q = board->get(y, x);                        // target cell
     if (q != EMPTY && q != OUT_BOUND && !canCapture(q)) // cell occuppied by higher-rank opponent
         return false;
     return true;
