@@ -8,6 +8,7 @@ class Elephant : public Piece
 public:
     Elephant(Color color, int y, int x);
     virtual bool isMoveValid(Board *board, int y, int x);
+    virtual bool canCapture(Piece *p);
 };
 
 #endif // ELEPHANT_H
