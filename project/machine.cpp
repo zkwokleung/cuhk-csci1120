@@ -80,4 +80,5 @@ void Machine::makeMove(Board *board)
     int y1 = getPiece(moves[ran][0])->getY();
     int x1 = getPiece(moves[ran][0])->getX();
     board->move(y1, x1, moves[ran][1], moves[ran][2]);
+    cout << this->getName() << "'s turn: " << char(x1 + 'A') << y1 + 1 << " " << char(moves[ran][2] + 'A') << moves[ran][1] + 1 << endl;
 }
