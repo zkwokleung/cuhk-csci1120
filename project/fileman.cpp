@@ -1,5 +1,5 @@
 #include <iostream>
-#include <fstream>	// std::ifstream
+#include <fstream> // std::ifstream
 #include <cctype>
 #include "fileman.h"
 #include "piece.h"
@@ -15,33 +15,37 @@
 using namespace std;
 
 // for loading a board initial configuration file into the board
-void loadFromFile(const char* filename, Board* board)
+void loadFromFile(const char *filename, Board *board)
 {
 	ifstream fin(filename);
 
 	// Terminate if the file cannot be opened for reading
-	if (fin.fail()) {
+	if (fin.fail())
+	{
 		cout << "File " << filename << " could not be opened" << endl;
-		exit(1);  
+		exit(1);
 	}
 
 	int row, r, c;
 	char col, label;
-	while (!fin.eof()) {
-		fin >> col >> row >> label;
-		if (fin.fail() && !fin.eof()) {
+	while (fin >> col >> row >> label)
+	{
+		if (fin.fail() && !fin.eof())
+		{
 			cout << "Error in reading the data file!\n";
-			exit(1);	// Stop reading immediately
+			exit(1); // Stop reading immediately
 		}
 		c = col - 'A';
 		r = row - 1;
-		if (r < 0 || r > Board::H - 1 || c < 0 || c > Board::W - 1) {
+		if (r < 0 || r > Board::H - 1 || c < 0 || c > Board::W - 1)
+		{
 			cout << "Invalid file data found!\n";
-			exit(1);	// Stop reading immediately
+			exit(1); // Stop reading immediately
 		}
-		Piece* p;
+		Piece *p;
 		Color color = isupper(label) ? RED : BLUE;
-		switch (toupper(label)) {
+		switch (toupper(label))
+		{
 		case 'E':
 			p = new Elephant(color, r, c);
 			break;
@@ -74,11 +78,13 @@ void loadFromFile(const char* filename, Board* board)
 		// Basic validation
 		if (board->isTrap(r, c, Color(1 - color)))
 			p->setTrapped(true);
-		if (board->isRiver(r, c) && p->getRank() != RAT) {
+		if (board->isRiver(r, c) && p->getRank() != RAT)
+		{
 			cout << "Invalid input! Only rats can be put in river!" << endl;
 			exit(1);
 		}
-		if (board->isDen(r, c, color)) {
+		if (board->isDen(r, c, color))
+		{
 			cout << "Invalid input! Animals can't be put in their own den!" << endl;
 			exit(1);
 		}
