@@ -68,6 +68,23 @@ bool Piece::isTrapped()
 void Piece::setTrapped(bool trapped)
 {
     this->trapped = trapped;
+    // make more sense to set the rank in here
+    if (trapped)
+    {
+        // handle rank changes when entering and leaving traps
+        setRank(0);
+    }
+    else
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            if (getName() == PIECE_NAME[i])
+            {
+                setRank(i + 1);
+                break;
+            }
+        }
+    }
 }
 
 // Return true if p is an opponent piece of this piece, and false otherwise
@@ -103,34 +120,25 @@ void Piece::capture(Board *board, Piece *p)
 void Piece::move(Board *board, int y, int x)
 {
     // capture opponent piece
-    if (board->get(y, x) != EMPTY || board->get(y, x) != OUT_BOUND)
+    if (board->get(y, x) != EMPTY && board->get(y, x) != OUT_BOUND)
         capture(board, board->get(y, x));
 
     Color opColor = (getColor() == BLUE) ? RED : BLUE;
-
-    // handle rank changes when entering and leaving traps
     if (board->isTrap(y, x, opColor))
     {
+        // make more sense to set the rank inside setTrapped()
         setTrapped(true);
-        setRank(0);
     }
     else if (this->isTrapped() && !board->isTrap(y, x, opColor))
     {
+        // make more sense to set the rank inside setTrapped()
         setTrapped(false);
-        for (int i = 0; i < 8; i++)
-        {
-            if (getName() == PIECE_NAME[i])
-            {
-                setRank(i + 1);
-                break;
-            }
-        }
     }
 
     // check winning conditions
     // (moved into opponent's den or captured all opponent pieces)
     if (board->isDen(y, x, opColor) ||
-        board->getGame()->getPlayer(opColor)->getPieceCount() == 0)
+        board->getGame()->getPlayer(opColor)->getPieceCount() <= 0)
         board->getGame()->setState(GAME_OVER);
 
     // carry out the move
