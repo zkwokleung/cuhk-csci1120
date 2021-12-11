@@ -33,7 +33,7 @@ void Machine::makeMove(Board *board)
             if (p->isMoveValid(board, p->getY() + dir, p->getX()))
                 moves.push_back({i, p->getY() + dir, p->getX()});
 
-            if (p->isMoveValid(board, p->getY(), p->getX()))
+            if (p->isMoveValid(board, p->getY(), p->getX() + dir))
                 moves.push_back({i, p->getY(), p->getX() + dir});
 
             // Special case for jumpable pieces
@@ -47,7 +47,7 @@ void Machine::makeMove(Board *board)
                     tarY = p->getY() + i * 4;
                     tarX = p->getX();
                 }
-                else if (board->isRiver(p->getY(), p->getX()))
+                else if (board->isRiver(p->getY(), p->getX() + dir))
                 {
                     // 2 steps jump
                     tarY = p->getY();
