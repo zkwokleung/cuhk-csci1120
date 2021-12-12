@@ -12,7 +12,7 @@ using namespace std;
 Machine::Machine(string name, Color color) : Player(name, color)
 {
     // randomize the seed of random number generator using the current time
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
 }
 
 // a sample machine that makes random valid moves
